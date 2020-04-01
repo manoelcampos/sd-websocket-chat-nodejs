@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat</title>
+        <link rel="stylesheet" href="estilo.css">
+    </head>
+    <body>
+        <header>
+            <form>
+                <input autofocus type='text' id='msg' placeholder="Digite uma mensagem" autocomplete="off" /> 
+                <button type='submit'>Enviar</button>
+            </form>
+        </header>
+        <ul id='messages'></ul>
+        <div id='status'></div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            $(function(){
+                const socket = io()
+                socket.nickname = ''
+
+                $('form').submit(function(){
+                    if(socket.nickname === ''){
+                        socket.nickname = $('#msg').val()
+                        socket.emit('login', socket.nickname)
+
+                        socket.on('status', function (msg) {
+                            $('#status').html(msg)
+                            console.log(msg)
+                        })
+
+                        $('#msg').keypress(function (evt) {
+                            if (socket.nickname === '') {
+                                return
+                            }
+
+                            socket.emit('status', socket.nickname + ' está escrevendo...')
+                        })
+
+                        $('#msg').keyup(function (evt) {
+                            socket.emit('status', '')
+                        })                        
+                    } else {
+                        socket.emit('chat msg', $('#msg').val())
+                    }
+
+                    $('#msg').val('')
+                    return false
+                })
+
+                socket.on('chat msg', function(msg){
+                    $('#messages').append($('<li>').text(msg))
+                })
+            })
+        </script>
+    </body>
+</html>
