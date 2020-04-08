@@ -7,8 +7,8 @@
     <body>
         <header>
             <form>
-                <input autofocus type='text' id='msg' placeholder="Digite uma mensagem" autocomplete="off" /> 
-                <button type='submit'>Enviar</button>
+                <input autofocus type='text' id='msg' placeholder="Digite seu login" autocomplete="off" /> 
+                <button id="button1" type='submit'>Logar</button>
             </form>
         </header>
         <ul id='messages'></ul>
@@ -25,6 +25,9 @@
                     if(socket.nickname === ''){
                         socket.nickname = $('#msg').val()
                         socket.emit('login', socket.nickname)
+
+                        $('#msg').prop('placeholder', 'Digite uma mensagem');
+                        $('#button1').html('Enviar');
 
                         socket.on('status', function (msg) {
                             $('#status').html(msg)
